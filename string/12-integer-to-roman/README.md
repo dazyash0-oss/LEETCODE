@@ -106,3 +106,36 @@ Note: 49 is not 1 (I) less of 50 (L) because the conversion is based on decimal 
 <ul>
 	<li><code>1 &lt;= num &lt;= 3999</code></li>
 </ul>
+
+This is a clean, optimal, and standard greedy approach to solving the **Integer to Roman** problem.
+
+---
+
+# Approach: Greedy Algorithm
+
+The problem requires converting an integer into its Roman numeral representation. Roman numerals are written largest to smallest from left to right. Because of this structural property, a **greedy approach** works perfectly: we always want to use the largest possible Roman numeral value at any given step.
+
+1. **Mapping Values to Symbols:** We store all unique Roman numeral symbols along with their corresponding integer values in a descending-ordered list (`valueSymbols`). This list explicitly includes the standard subtraction cases (like 900 for "CM", 40 for "XL") to natively handle the subtractive logic without complex conditional checks.
+2. **Iterative Reduction:** We iterate through our mapped pairs. For each pair:
+* A `while` loop checks if the remaining `num` is greater than or equal to the current `value`.
+* If it is, we append the matching `symbol` to our result string `res` and subtract `value` from `num`.
+* The `while` loop repeats until `num` is smaller than the current `value`, at which point the outer `for` loop moves to the next smaller Roman numeral.
+
+
+3. **Early Exit:** The `if (num == 0) break;` optimization ensures that if the number hits zero before checking smaller symbols (e.g., matching exactly `2000` to `"MM"`), the loop terminates early.
+
+---
+
+## Complexities
+
+### Time Complexity: $O(1)$ (Constant Time)
+
+* **Why:** Although there is a nested loop (`while` inside `for`), the total number of operations is strictly bounded by a hard upper limit.
+* The outer loop always runs a maximum of 13 times (the number of elements in `valueSymbols`).
+* The inner `while` loop runs at most a few times per symbol. For example, since the maximum input constraint for this LeetCode problem is typically $3999$, the symbol `"M"` (1000) can be appended at most 3 times. Other symbols like `"CM"` or `"D"` can only appear once per number.
+* Because the execution steps do not scale with an arbitrarily large $N$, the time complexity is constant.
+
+### Space Complexity: $O(1)$ (Constant Space)
+
+* **Why:** The `valueSymbols` vector is a fixed size of 13 elements, which uses a trivial, fixed amount of memory.
+* The output string `res` takes up a maximum of 15 characters (for the number 3888: `"MMMDCCCLXXXVIII"`). Since this maximum size is fixed and independent of any scaling input, the auxiliary space complexity is $O(1)$.
