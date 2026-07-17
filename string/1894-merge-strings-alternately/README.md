@@ -43,3 +43,33 @@ merged: a p b q c   d
 	<li><code>1 &lt;= word1.length, word2.length &lt;= 100</code></li>
 	<li><code>word1</code> and <code>word2</code> consist of lowercase English letters.</li>
 </ul>
+
+---
+---
+
+# Approach: Two-Pointer Simulation with Single Loop
+
+The problem requires merging two strings by alternating characters, starting with `word1`. If one string is longer than the other, the additional characters should just be appended to the end.
+
+1. **Unified Pointer (`i`):** Instead of managing separate indices for both strings, this solution smartly uses a single index `i` initialized to `0`. Since we are alternating characters at the exact same index positions, one variable is all we need.
+2. **Flexible Loop Condition:** The loop runs as long as `i` is less than the length of *either* `word1` OR `word2` (`i < word1.length() || i < word2.length()`). This ensures the loop won't stop early if one string runs out of characters.
+3. **Safe Bounds Checking:** Inside the loop, two independent `if` statements check if `i` is still within the valid range for each string:
+* If `i` is within `word1`, its character is appended.
+* If `i` is within `word2`, its character is appended.
+
+
+4. **Natural Appending:** When the shorter string is completely exhausted, its corresponding `if` condition simply evaluates to `false`. The loop continues, seamlessly appending only the remaining characters of the longer string until it finishes.
+
+---
+
+## Complexities
+
+### Time Complexity: $O(n + m)$
+
+* **Why:** The loop runs exactly $\max(n, m)$ times, where $n$ is the length of `word1` and $m$ is the length of `word2`. Inside the loop, appending a character to a string takes $O(1)$ amortized time. Therefore, the total time spent is directly proportional to the total number of characters across both strings, resulting in a linear time complexity of $O(n + m)$.
+
+### Space Complexity: $O(1)$ or $O(n + m)$
+
+* **Why:**
+* **Auxiliary Space:** The algorithm only uses a few primitive variables (`i`) which take up $O(1)$ constant space. No extra data structures are created.
+* **Output Space:** If we count the space required for the output, the `result` string stores exactly $n + m$ characters, which takes $O(n + m)$ space. In interview contexts, memory used strictly for the mandatory return value is usually excluded from auxiliary space analysis, making it effectively $O(1)$.
