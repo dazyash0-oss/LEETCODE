@@ -56,3 +56,30 @@
 	<li><code>1 &lt;= s.length &lt;= 10<sup>4</sup></code></li>
 	<li><code>s</code> consists of parentheses only <code>&#39;()[]{}&#39;</code>.</li>
 </ul>
+
+---
+---
+
+# Approach: Stack Data Structure
+
+The core rule of matching brackets is that the *most recently opened* bracket must be the *first one closed*. A stack is the perfect data structure for this because the last element pushed onto it is always the first one accessible at the top.
+
+1. **Processing Open Brackets:** We iterate through the string character by character. If the character is an opening bracket (`(`, `{`, or `[`), we push it onto our stack `st`. This essentially saves it for later, waiting for its corresponding closing partner.
+2. **Handling Closing Brackets:** When we encounter a closing bracket (the `else` block), we have to evaluate two critical failure conditions:
+* **Empty Stack Check:** If the stack is empty (`st.empty()`), it means we found a closing bracket with absolutely no opening bracket preceding it (e.g., `s = "]"`). This is immediately invalid, so we return `false`.
+* **Matching Check:** We peek at the top of the stack (`st.top()`). If the current closing bracket matches the type of the top opening bracket (e.g., `)` matches `(`), we successfully paired them up, so we remove the open bracket from the stack using `st.pop()`. If they don't match (e.g., `}` trying to close `(`), it's a mismatch, and we return `false`.
+
+
+3. **Final Verification:** After checking the entire string, there is one last catch—unclosed brackets (e.g., `s = "(()"`). If the stack still has characters remaining inside it, the string is invalid. Returning `st.empty()` ensures we only return `true` if every single opening bracket found its correct match.
+
+---
+
+## Complexities
+
+### Time Complexity: $O(n)$
+
+* **Why:** The algorithm scans the string `s` exactly once, processing each character one by one, where $n$ is the length of the string. Inside the loop, the stack operations (`push`, `pop`, `top`, and `empty`) all execute in $O(1)$ constant time. Therefore, the execution time scales linearly with the number of brackets in the string.
+
+### Space Complexity: $O(n)$
+
+* **Why:** In the worst-case scenario, the string consists entirely of opening brackets (e.g., `s = "((((((("`). In this case, no brackets are popped, and the stack will grow to store all $n$ characters. Thus, the auxiliary space used by the stack scales linearly with the input size, resulting in $O(n)$ space complexity.
