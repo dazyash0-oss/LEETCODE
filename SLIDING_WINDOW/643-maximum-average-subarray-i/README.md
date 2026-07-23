@@ -26,3 +26,31 @@
 	<li><code>1 &lt;= k &lt;= n &lt;= 10<sup>5</sup></code></li>
 	<li><code>-10<sup>4</sup> &lt;= nums[i] &lt;= 10<sup>4</sup></code></li>
 </ul>
+
+
+---
+---
+
+## Approach Breakdown
+
+To find the maximum average of any contiguous subarray of length $k$, we only need to find the **maximum sum** of a contiguous subarray of length $k$. Dividing that maximum sum by $k$ gives the maximum average.
+
+### Key Intuition
+
+1. **First Window Initialization:** Compute the sum of the first $k$ elements (`nums[0]` through `nums[k-1]`) and set `maxSum` equal to this initial sum.
+2. **Slide the Window:** Instead of re-calculating the sum of all $k$ elements from scratch at every step (which would take $\mathcal{O}(k)$ per window), slide the window one element to the right:
+* **Subtract** the element leaving the window on the left (`nums[i - k]`).
+* **Add** the element entering the window on the right (`nums[i]`).
+* Update `maxSum` if the new running `sum` is larger.
+
+
+3. **Compute Average:** Convert `maxSum` to a double and divide by $k$.
+
+---
+
+## Complexity Analysis
+
+| Complexity | Measure | Reason |
+| --- | --- | --- |
+| **Time Complexity** | $\mathcal{O}(n)$ | We iterate through the array twice: once to sum the first $k$ elements, and once from index $k$ to $n-1$. Each step takes $\mathcal{O}(1)$ time. |
+| **Space Complexity** | $\mathcal{O}(1)$ | Uses only a few scalar variables (`sum`, `maxSum`, `i`), requiring no additional dynamic memory allocation. |
