@@ -49,3 +49,37 @@ It does not matter what you leave beyond the returned k (hence they are undersco
 	<li><code>-100 &lt;= nums[i] &lt;= 100</code></li>
 	<li><code>nums</code> is sorted in <strong>non-decreasing</strong> order.</li>
 </ul>
+---
+---
+
+## The Approach
+
+1. **Base Case:**
+If the vector is empty, return `0` immediately.
+2. **Initialize Two Pointers:**
+* **`i` (Slow Pointer / Write Index):** Tracks where the next unique element should be placed. Starts at index `1` because the first element (`nums[0]`) is always unique relative to itself.
+* **`j` (Fast Pointer / Read Index):** Scans through the array from left to right (starts at index `1`).
+
+
+3. **In-Place Modification:**
+* Compare the current element `nums[j]` with the last confirmed unique element `nums[i - 1]`.
+* **If `nums[j] != nums[i - 1]`:** You've found a new unique number. Write it into the slot `nums[i]` and increment `i` to reserve the next slot.
+* **If `nums[j] == nums[i - 1]`:** It's a duplicate. Skip it by letting the loop increment `j` without updating `i`.
+
+
+4. **Return Result:**
+When `j` finishes scanning, `i` holds the total count of unique elements, and the first `i` positions in `nums` hold those unique values in their original order.
+
+---
+
+## Complexity Analysis
+
+### Time Complexity: $\mathcal{O}(N)$
+
+* The fast pointer `j` iterates through the array of size $N$ exactly once.
+* All operations inside the loop (comparisons and assignments) run in $\mathcal{O}(1)$ constant time.
+
+### Space Complexity: $\mathcal{O}(1)$
+
+* Modifies the array **in-place**.
+* Only uses two integer variables (`i` and `j`), requiring no additional memory regardless of the array size.
