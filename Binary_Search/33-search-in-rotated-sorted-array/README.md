@@ -27,3 +27,82 @@
 	<li><code>nums</code> is an ascending array that is possibly rotated.</li>
 	<li><code>-10<sup>4</sup> &lt;= target &lt;= 10<sup>4</sup></code></li>
 </ul>
+
+
+---
+---
+
+## 💡 Key Intuition
+
+When a sorted array is rotated at a pivot point (e.g., `[4, 5, 6, 7, 0, 1, 2]`), dividing it in half at index `mid` guarantees that **at least one of the two sub-arrays will always be completely sorted**.
+
+```
+Array: [ 4,  5,  6,  7,  0,  1,  2 ]
+                 ^ mid = 7
+
+Left Sub-array  [4, 5, 6, 7] -> SORTED (nums[low] <= nums[mid])
+Right Sub-array [0, 1, 2]    -> UN-SORTED
+
+```
+
+Because one side is guaranteed to be sorted, we can easily check if our `target` lies within the sorted side's range. If it does, we narrow our search to that side; if it doesn't, we eliminate it and search the other side.
+
+---
+
+## 🛠️ Step-by-Step Approach
+
+1. **Initialize Pointers:** Set `low = 0` and `high = nums.size() - 1`.
+2. **Loop Condition:** Continue while `low <= high`.
+3. **Calculate Midpoint:** Find `mid = low + (high - low) / 2`.
+4. **Target Check:** If `nums[mid] == target`, return `mid`.
+5. **Identify the Sorted Half:**
+* **If `nums[low] <= nums[mid]` (Left Half is Sorted):**
+* Check if `target` falls within the left range: `nums[low] <= target < nums[mid]`.
+* **Yes:** Search left side (`high = mid - 1`).
+* **No:** Search right side (`low = mid + 1`).
+
+
+* **Else (Right Half is Sorted):**
+* Check if `target` falls within the right range: `nums[mid] < target <= nums[high]`.
+* **Yes:** Search right side (`low = mid + 1`).
+* **No:** Search left side (`high = mid - 1`).
+
+
+
+
+6. **Not Found:** If the loop terminates without finding the target, return `-1`.
+
+---
+
+## 🔍 Code Review & Small Improvement
+
+Your overall logic is completely correct! The algorithm properly handles the rotated search space.
+
+### Minor Detail: Midpoint Calculation
+
+In your code:
+
+```cpp
+int mid = (low + high) / 2;
+
+```
+
+While this works fine for small arrays, `(low + high)` can potentially cause **integer overflow** if the array size is extremely large. Changing it to:
+
+```cpp
+int mid = low + (high - low) / 2;
+
+```
+
+is safer C++ practice.
+
+---
+
+## ⏱️ Complexity Analysis
+
+| Metric | Complexity | Explanation |
+| --- | --- | --- |
+| **Time Complexity** | **$O(\log n)$** | In every iteration, we eliminate half of the search space regardless of which sub-array is sorted. |
+| **Space Complexity** | **$O(1)$** | Operates strictly in-place with a few index pointer variables (`low`, `high`, `mid`). |
+
+---
