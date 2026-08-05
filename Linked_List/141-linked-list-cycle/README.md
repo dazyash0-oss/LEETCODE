@@ -40,3 +40,73 @@
 
 <p>&nbsp;</p>
 <p><strong>Follow up:</strong> Can you solve it using <code>O(1)</code> (i.e. constant) memory?</p>
+
+
+---
+---
+
+## Key Approach Notes
+
+* **Two-Pointer Technique:**
+* **`slow` pointer (Tortoise):** Moves **1 step** at a time (`slow = slow->next`).
+* **`fast` pointer (Hare):** Moves **2 steps** at a time (`fast = fast->next->next`).
+
+
+* **Core Intuition:**
+* If there is **no cycle**, `fast` will eventually reach the end of the list (`nullptr`), returning `false`.
+* If there **is a cycle**, both pointers will enter the loop. Because `fast` gains 1 step on `slow` during every iteration, the relative distance between them decreases by 1 step each turn, guaranteeing they will eventually meet (`fast == slow`).
+
+
+* **Complexity:**
+* **Time Complexity:** $O(N)$, where $N$ is the number of nodes. If a cycle exists, `fast` catches up to `slow` in $O(K)$ iterations (where $K$ is the length of the cycle).
+* **Space Complexity:** $O(1)$ auxiliary space, since it only uses two pointer variables.
+
+
+
+---
+
+## Visual Diagram
+
+### Case 1: Linked List with a Cycle
+
+Consider the list `1 -> 2 -> 3 -> 4 -> 2` (loop back to node 2):
+
+```text
+Step 0 (Initialization):
+[1] -> [2] -> [3] -> [4]
+ ^                     |
+ S,F                   v
+  |<-------------------|
+
+Step 1: slow moves 1 step to 2, fast moves 2 steps to 3
+[1] -> [2] -> [3] -> [4]
+        ^      ^       |
+        S      F       v
+  |<-------------------|
+
+Step 2: slow moves 1 step to 3, fast moves 2 steps to 2
+[1] -> [2] -> [3] -> [4]
+        ^      ^       |
+        F      S       v
+  |<-------------------|
+
+Step 3: slow moves 1 step to 4, fast moves 2 steps to 4
+[1] -> [2] -> [3] -> [4]
+                       |
+                      S,F  <-- Fast and Slow MEET! (Return true)
+  |<-------------------|
+
+```
+
+---
+
+### Case 2: Linear Linked List (No Cycle)
+
+Consider `1 -> 2 -> 3 -> nullptr`:
+
+```text
+Step 0: S and F start at [1].
+Step 1: S moves to [2], F moves to [3].
+Step 2: F->next is nullptr. Loop terminates and returns false.
+
+```
