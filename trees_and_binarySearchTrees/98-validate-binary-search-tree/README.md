@@ -31,3 +31,59 @@
 	<li>The number of nodes in the tree is in the range <code>[1, 10<sup>4</sup>]</code>.</li>
 	<li><code>-2<sup>31</sup> &lt;= Node.val &lt;= 2<sup>31</sup> - 1</code></li>
 </ul>
+
+
+### Approach & Concept
+
+The code solves **LeetCode 98: Validate Binary Search Tree** using a **Top-Down Recursive DFS with Range Validation (Bounding Constraint)** approach.
+
+The core idea is that for a binary tree to be a valid BST, it is **not enough** for a node's value to just be greater than its left child and smaller than its right child. Every node must satisfy global bounds derived from all its ancestors:
+
+1. **Range Maintenance:** Each node must lie strictly within an allowed open interval `(minimum, maximum)`.
+2. **Left Subtree Update:** When moving to `node->left`, all values in that branch must be strictly smaller than `node->val`. The new upper bound becomes `node->val` while the lower bound stays `minimum`.
+3. **Right Subtree Update:** When moving to `node->right`, all values in that branch must be strictly greater than `node->val`. The new lower bound becomes `node->val` while the upper bound stays `maximum`.
+4. **Base Case:** An empty node (`!node`) is inherently a valid BST, so it returns `true`.
+5. **Validation Failure:** If `node->val <= minimum` or `node->val >= maximum`, the tree breaks BST properties, returning `false`.
+
+*(Note: `LONG_MIN` and `LONG_MAX` are used to handle edge cases where tree node values equal `INT_MIN` or `INT_MAX`.)*
+
+---
+
+### Complexity Analysis
+
+* **Time Complexity:** $\mathcal{O}(N)$, where $N$ is the total number of nodes in the binary tree. Every node is visited at most once.
+* **Space Complexity:** $\mathcal{O}(H)$, where $H$ is the height of the tree, representing call stack usage.
+* Best/Average case (Balanced tree): $\mathcal{O}(\log N)$
+* Worst case (Skewed tree): $\mathcal{O}(N)$
+
+
+
+---
+
+### Recursion Template Used
+
+This solution follows the **Top-Down DFS / Preorder Recursion with Range Propagation** template.
+
+#### Template Structure
+
+```cpp
+bool solveTree(TreeNode* node, DataType lowBound, DataType highBound) {
+    // 1. Base Case: Reached null without breaking rules
+    if (node == nullptr) {
+        return true;
+    }
+
+    // 2. Preorder Check: Validate current node against propagated state/bounds
+    if (/* node->val violates lowBound or highBound */) {
+        return false;
+    }
+
+    // 3. Downward Propagation: Recurse left and right with updated constraints
+    bool leftValid = solveTree(node->left, lowBound, node->val);
+    bool rightValid = solveTree(node->right, node->val, highBound);
+
+    // 4. Combine results
+    return leftValid && rightValid;
+}
+
+```
