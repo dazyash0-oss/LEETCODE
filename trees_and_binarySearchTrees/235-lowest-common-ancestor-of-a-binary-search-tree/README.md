@@ -36,3 +36,46 @@
 	<li><code>p != q</code></li>
 	<li><code>p</code> and <code>q</code> will exist in the BST.</li>
 </ul>
+
+---
+---
+
+## 2. Approach & Intuition
+
+The core strategy relies on the **Binary Search Tree (BST) ordering property**: for any node $N$, all nodes in its left subtree have values strictly less than $N$, and all nodes in its right subtree have values strictly greater than $N$.
+
+### Key Insight: The "Split Point"
+
+The Lowest Common Ancestor (LCA) is the highest node in the tree where `p` and `q` are no longer located in the same subtree. As you walk down from the root, there are three possible scenarios for the current node:
+
+1. **Both `p` and `q` are larger than `root`:** The LCA must lie strictly in the **right** subtree. Move `root = root->right`.
+2. **Both `p` and `q` are smaller than `root`:** The LCA must lie strictly in the **left** subtree. Move `root = root->left`.
+3. **Values split across `root` (or one equals `root`):** This happens when:
+* One node is on the left and the other is on the right (`p->val < root->val` and `q->val > root->val`).
+* `root` itself is equal to `p` or `q` (a node can be an ancestor of itself).
+
+
+At this precise node, `p` and `q` diverge. Therefore, the current `root` is guaranteed to be the lowest common ancestor.
+
+---
+
+## 3. Detailed Notes & Complexity
+
+### Complexity Analysis
+
+* **Time Complexity:** $O(H)$, where $H$ is the height of the tree.
+* **Best/Average Case (Balanced BST):** $O(\log N)$ steps because half of the remaining subtree is eliminated at each decision point.
+* **Worst Case (Skewed BST):** $O(N)$ if the tree degenerates into a single long branch (e.g., linked list structure).
+
+
+* **Space Complexity:** $O(1)$ auxiliary space for the iterative solution, as it only updates a pointer rather than allocating additional memory.
+
+### Comparison: Iterative vs. Recursive
+
+| Aspect | Iterative Approach (Your Code) | Recursive Approach |
+| --- | --- | --- |
+| **Space Complexity** | $O(1)$ | $O(H)$ due to implicit call stack |
+| **Overflow Risk** | None | Risk of stack overflow on deeply skewed trees |
+| **Readability** | High (clean while loop) | High (concise 4-liner) |
+
+---
