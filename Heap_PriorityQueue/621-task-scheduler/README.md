@@ -92,3 +92,71 @@ font-size: 0.85rem;
 	<li><code>tasks[i]</code> is an uppercase English letter.</li>
 	<li><code>0 &lt;= n &lt;= 100</code></li>
 </ul>
+
+---
+---
+
+## **Key Concept: Framing the Core Bottleneck**
+
+The entire logic relies on the **Greedy Choice Principle**:
+
+> The overall time to execute all tasks is dictated by the task that appears the **most frequently**.
+
+Instead of manually simulating the CPU execution using a Queue or Max-Heap, this solution calculates the minimum possible intervals using a visual **bucket/grid arrangement**.
+
+---
+
+## **How the Math Works**
+
+1. **Find the Maximum Frequency (`maxfreq`)**:
+Let’s say the most frequent task appears `maxfreq` times.
+2. **Create Idle Frame Blocks**:
+To prevent same tasks from violating the cooling distance `n`, we arrange the most frequent task into `maxfreq - 1` groups. Each group needs a slot of size `n + 1` (1 spot for the task itself + `n` cooling/idle spots).
+3. **Handle Ties (`cm`)**:
+`cm` (count of maximum frequency tasks) represents how many tasks tie for the highest frequency. These tie tasks will fill the final row after the main groups.
+
+### **Formula**
+
+$$\text{Min Slots Required} = (\text{maxfreq} - 1) \times (n + 1) + \text{cm}$$
+
+---
+
+## **Visual Example**
+
+Suppose `tasks = ["A","A","A","B","B","B"]`, and `n = 2`.
+
+* `maxfreq = 3` (Task A and B both appear 3 times)
+* `cm = 2` (Both A and B have frequency 3)
+
+### **Grid Layout**
+
+* **Frame Size:** `maxfreq - 1 = 2` full blocks.
+* **Block Width:** `n + 1 = 3` slots per row.
+
+| Block Row | Slot 1 | Slot 2 | Slot 3 |
+| --- | --- | --- | --- |
+| **Row 1** | **A** | **B** | `idle` |
+| **Row 2** | **A** | **B** | `idle` |
+| **Row 3 (Final)** | **A** | **B** | *(Done)* |
+
+**Calculation:**
+
+$$\text{Formula Result} = (3 - 1) \times (2 + 1) + 2 = 8 \text{ units of time}$$
+
+---
+
+## **Why `max(tasks.size(), ...)`?**
+
+What if there are so many unique tasks that they completely fill up all the idle slots and spill over?
+
+* **Case 1 (Idle Slots Remain):** The formula calculation is greater than `tasks.size()`. The answer is the formula result.
+* **Case 2 (No Idle Slots Needed):** There are enough low-frequency tasks to fill all gaps naturally without inserting any idle units. The CPU never sits idle, so total time is simply `tasks.size()`.
+
+Taking `max((int)tasks.size(), formula_result)` safely handles both scenarios without needing extra condition checks.
+
+---
+
+## **Complexity Analysis**
+
+* **Time Complexity:** $\mathcal{O}(N)$ where $N$ is the number of tasks (to count frequencies). Scanning the fixed `freq` array of size 26 takes $\mathcal{O}(1)$ time.
+* **Space Complexity:** $\mathcal{O}(1)$ because the frequency map size is fixed at 26 (constant memory).
