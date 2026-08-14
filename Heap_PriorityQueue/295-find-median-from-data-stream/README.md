@@ -48,3 +48,67 @@ medianFinder.findMedian(); // return 2.0
 	<li>If all integer numbers from the stream are in the range <code>[0, 100]</code>, how would you optimize your solution?</li>
 	<li>If <code>99%</code> of all integer numbers from the stream are in the range <code>[0, 100]</code>, how would you optimize your solution?</li>
 </ul>
+
+---
+---
+
+## **Approach Notes**
+
+### **Core Idea: Two Heaps Splitting the Data**
+
+Instead of keeping a fully sorted array (which takes $\mathcal{O}(N)$ to insert each new number), divide the numbers into two halves using two heaps:
+
+1. **`maxHeap` (Left Half):** Stores the **smaller half** of the numbers.
+* `maxHeap.top()` gives the **largest value of the lower half**.
+
+
+2. **`minHeap` (Right Half):** Stores the **larger half** of the numbers.
+* `minHeap.top()` gives the **smallest value of the upper half**.
+
+
+
+By keeping the numbers split at the exact midpoint, the median is always available in $\mathcal{O}(1)$ time directly from the tops of the two heaps.
+
+---
+
+## **Two-Heap Invariants & Balance Mechanics**
+
+To ensure the algorithm works correctly, two invariants are strictly maintained during every `addNum` call:
+
+### **1. Ordering Invariant**
+
+> Every element in `maxHeap` must be $\le$ every element in `minHeap`.
+
+* **How your code enforces this:**
+When a new number arrives, it is first pushed to `maxHeap`. Then, `maxHeap.top()` is immediately transferred to `minHeap`. This guarantees that any large value that doesn't belong in the lower half automatically routes to the upper half.
+
+### **2. Size-Balance Invariant**
+
+> Either `maxHeap.size() == minHeap.size()` (even number of total elements)
+> or `maxHeap.size() == minHeap.size() + 1` (odd number of total elements).
+
+* **How your code enforces this:**
+If `minHeap` ever ends up larger than `maxHeap`, pop the smallest element from `minHeap` and push it back to `maxHeap`.
+
+---
+
+### **Calculating Median (`findMedian`)**
+
+* **Odd total elements:** `maxHeap` has 1 more element than `minHeap`.
+$$\text{Median} = \text{maxHeap.top()}$$
+
+
+* **Even total elements:** Both heaps have the exact same size.
+$$\text{Median} = \frac{\text{maxHeap.top()} + \text{minHeap.top()}}{2.0}$$
+
+
+
+---
+
+## **Complexity Analysis**
+
+| Operation | Time Complexity | Reason |
+| --- | --- | --- |
+| **`addNum(num)`** | $\mathcal{O}(\log N)$ | At most 3 heap insertions/removals per call. |
+| **`findMedian()`** | $\mathcal{O}(1)$ | Only inspects `maxHeap.top()` and `minHeap.top()`. |
+| **Space Complexity** | $\mathcal{O}(N)$ | Stores $N$ total elements split across both heaps. |
