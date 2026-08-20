@@ -32,6 +32,67 @@ These are the only two combinations.
 
 <p>&nbsp;</p>
 <p><strong>Constraints:</strong></p>
+---
+---
+
+**Core Concept**
+This C++ algorithm solves the **Combination Sum** problem (finding all unique combinations of candidate numbers that sum to a target value, allowing the same number to be reused endlessly). It uses a **Include/Exclude Decision Tree** pattern executed via **Depth-First Search (DFS) with Backtracking**.
+
+---
+
+**Key Technical Takeaways (Study Notes)**
+
+* **Binary Choice Decision Model:** At each recursive step, the algorithm makes two decisions for the current candidate element (`candidates[idx]`):
+1. **Include:** Add `candidates[idx]` to the current path, keep the index at `idx` (allowing reuse), and update `total`.
+2. **Exclude:** Skip `candidates[idx]` and increment to `idx + 1` to move on to the next available number.
+
+
+* **Base Case Terminations:**
+* **Success:** `total == target` adds a copy of the valid `comb` vector to `res`.
+* **Pruning:** `total > target` stops searching deeper down an invalid branch where the sum exceeded the limit.
+* **Boundary:** `idx >= candidates.size()` stops searching when no more candidate numbers are left to evaluate.
+
+
+* **Backtracking Dynamic:** `comb.pop_back()` undoes the choice made during the **Include** branch before testing the **Exclude** branch, keeping space consumption low.
+
+---
+
+**Step-by-Step Example Walkthrough**
+
+Consider the following input:
+
+* **Candidates (`candidates`):** `[2, 3]`
+* **Target (`target`):** `7`
+
+```
+Step 1: Recursive Path Execution
+--------------------------------------------------
+Root: combinationSum([2, 3], target=7)
+
+- Include 2: comb=[2], total=2
+  - Include 2: comb=[2, 2], total=4
+    - Include 2: comb=[2, 2, 2], total=6
+      - Include 2: comb=[2, 2, 2, 2], total=8 (total > target -> Backtrack!)
+      - Exclude 2 -> Try 3 (idx=1): comb=[2, 2, 2, 3], total=9 (total > target -> Backtrack!)
+    - Exclude 2 -> Try 3 (idx=1): comb=[2, 2, 3], total=7 (total == target -> Save [2, 2, 3]!)
+  - Exclude 2 -> Try 3 (idx=1): comb=[2, 3], total=5
+    - Include 3: comb=[2, 3, 3], total=8 (total > target -> Backtrack!)
+    - Exclude 3 (idx=2 out of bounds -> Backtrack!)
+- Exclude 2 -> Try 3 (idx=1): comb=[3], total=3
+  - Include 3: comb=[3, 3], total=6
+    - Include 3: comb=[3, 3, 3], total=9 (total > target -> Backtrack!)
+    - Exclude 3 (idx=2 out of bounds -> Backtrack!)
+
+Result: [[2, 2, 3]]
+
+```
+
+---
+
+**Complexity Analysis**
+
+* **Time Complexity:** $O(2^T)$, where $T$ is the target value divided by the smallest candidate value. This bounds the maximum depth of the recursive tree.
+* **Space Complexity:** $O(T)$ auxiliary space for the recursion stack and the tracking vector `comb`.
 
 <ul>
 	<li><code>1 &lt;= candidates.length &lt;= 30</code></li>
