@@ -1,28 +1,49 @@
 class Solution {
 public:
     int coinChange(vector<int>& coins, int amount) {
-        // memo[i] will store the min coins for amount i.
-        // Initialize with -2 to indicate "not computed yet".
-        vector<int> memo(amount + 1, -2);
-        return solve(coins, amount, memo);
-    }
-private:
-    int solve(vector<int>& coins, int rem, vector<int>& memo) {
-        if (rem < 0) return -1; // Invalid state
-        if (rem == 0) return 0;  // Base case: amount is 0
-        if (memo[rem] != -2) return memo[rem]; // Return cached result
-        
-        int min_count = INT_MAX;
-        
-        for (int coin : coins) {
-            int res = solve(coins, rem - coin, memo);
-            if (res >= 0 && res < min_count) {
-                min_count = 1 + res;
-            }
+        if (amount == 0) return 0;
+        const int n = coins.size();
+
+        if (n == 1) return amount % coins[0] ? -1 : amount/ coins[0];
+
+        sort(begin(coins),end(coins));
+
+        if (amount == coins[0]) return 1;
+        int minVal = coins[0];
+        int gcdVal = minVal;
+        int idx = 1;
+
+        for (; idx < n && coins[idx] <= amount; idx++)
+        {
+            if (coins[idx] == amount) return 1;
+            gcdVal = gcd(gcdVal, coins[idx]);
+            coins[idx] -= minVal;
         }
-        
-        // Cache the result before returning
-        memo[rem] = (min_count == INT_MAX) ? -1 : min_count;
-        return memo[rem];
+
+        if (amount % gcdVal) return -1;
+
+        int minn = (amount-1) / (coins[idx-1] + minVal) + 1;
+        int maxx = amount / minVal;
+
+        for (int i = minn; i <= maxx; i++)
+        {
+            if (findcomb(coins, 1, idx-1, amount-minVal*i, i)) return i;
+        }
+
+        return -1;
+    }
+
+    bool findcomb(vector<int>& coins, int l, int r, int amount, int rq)
+    {
+        if (amount == 0) return true;
+        else if (amount < coins[l] || amount / coins[r] > rq) return false;
+        else if (amount % coins[r] == 0) return true;
+        else if (l == r) return false;
+
+        for (int p = amount / coins[r] + 1; p--;)
+        {
+            if (findcomb(coins, l, r-1, amount-p*coins[r], rq-p)) return true;
+        }
+        return false;
     }
 };
