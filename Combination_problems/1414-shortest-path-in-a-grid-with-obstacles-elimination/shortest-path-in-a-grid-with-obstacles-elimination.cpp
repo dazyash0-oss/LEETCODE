@@ -1,49 +1,52 @@
 class Solution {
 public:
-    int solve(vector<vector<int>>& grid,int k){
-		// At a particular cell we will store the number of obstacles that we can still remove after walking through that cell
-        vector<vector<int>> vis(grid.size(),vector<int>(grid[0].size(),-1));
-        queue<vector<int>> q;
-		
-		// queue stores (x,y,current path length,number of obstacles we can still remove)
-        q.push({0,0,0,k});
-        while(!q.empty()){
-            auto t=q.front();
-            int x=t[0],y=t[1];
-            q.pop();
-			
-			// Exit if current position is outside of the grid
-            if(x<0 || y<0 || x>=grid.size() || y>=grid[0].size()){
-                continue;
-            }
-			
-			// Destination found
-            if(x==grid.size()-1 && y==grid[0].size()-1)
-                return t[2];
+    int shortestPath(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
 
-            if(grid[x][y]==1){
-                if(t[3]>0) // If we encounter an obstacle and we can remove it
-                    t[3]--;
-                else
-                    continue;
+        if (m == 1 && n == 1) return 0;
+
+        // enough eliminations to walk straight through anything
+        if (k >= m + n - 2) return m + n - 2;
+
+        // best[r][c] = max remaining eliminations seen when reaching (r, c)
+        vector<vector<int>> best(m, vector<int>(n, -1));
+
+
+        queue<vector<int>> q; // each entry is {r, c, used}
+        q.push({0, 0, k});
+        best[0][0] = k;
+
+        int dr[4] = {0, 0, 1, -1};
+        int dc[4] = {1, -1, 0, 0};
+        int steps = 0;
+
+        while (!q.empty()) {
+            steps++;
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                vector<int> cur = q.front();
+                q.pop();
+                int r = cur[0], c = cur[1], used = cur[2];
+
+                for (int d = 0; d < 4; d++) {
+                    int nr = r + dr[d], nc = c + dc[d];
+                    if (nr < 0 || nc < 0 || nr >= m || nc >= n) continue;
+
+                    // stepping onto a wall uses the one elimination
+                    int nrem = used - grid[nr][nc]; 
+                    // run out of eliminations
+                    if (nrem < 0) continue;
+                    // already been here in this state
+                    if (best[nr][nc] >= nrem) continue;
+                    best[nr][nc] = nrem;
+
+                    if (nr == m - 1 && nc == n - 1) return steps;
+
+                    q.push({nr, nc, nrem});
+                }
             }
-			
-			// The cell was previously visited by some path and we were able to remove more obstacles from the previous path.
-			// Then we don't need to continue on our current path
-            if(vis[x][y]!=-1 && vis[x][y]>=t[3])
-                continue;
-            vis[x][y]=t[3];
-            
-            q.push({x+1,y,t[2]+1,t[3]});
-            q.push({x,y+1,t[2]+1,t[3]});
-            q.push({x-1,y,t[2]+1,t[3]});
-            q.push({x,y-1,t[2]+1,t[3]});
-            
         }
         return -1;
-    }
-    
-    int shortestPath(vector<vector<int>>& grid, int k) {
-        return solve(grid,k);
     }
 };
